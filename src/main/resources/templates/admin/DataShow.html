@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<header th:replace="admin/header::header-fragment"></header>
+<body class="hold-transition sidebar-mini">
+<!-- jQuery -->
+<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
+<!-- 引入 ECharts 文件 -->
+<script th:src="@{/admin/dist/js/echarts.min.js}"></script>
+
+
+<div class="wrapper">
+    <!-- 引入页面头header-fragment -->
+    <div th:replace="admin/header::header-nav"></div>
+    <!-- 引入工具栏sidebar-fragment -->
+    <!--/*@thymesVar id="path" type=""*/-->
+    <div th:replace="admin/sidebar::sidebar-fragment(${path})"></div>
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper" >
+        <div id="main" style="height: 780px;">
+        </div>
+        <div id="main1" style="height: 780px;">
+        </div>
+
+    </div>
+    <!-- /.content-wrapper -->
+    <!-- 引入页脚footer-fragment -->
+    <div th:replace="admin/footer::footer-fragment"></div>
+</div>
+
+
+<script type="text/javascript">
+
+        var myChart = echarts.init(document.getElementById("main1"));
+        myChart.showLoading();
+        $.get('dist/js/zhejiang.json', function (geoJson) {
+            myChart.hideLoading();
+            echarts.registerMap('HK', geoJson);
+            myChart.setOption(option = {
+                title: {
+                    text: '浙江省购买密度',
+                    subtext: '购买密度来自qingzhu',
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}<br/>{c} (p / km2)'
+                },
+                toolbox: {
+                    show: true,
+                    orient: 'vertical',
+                    left: 'right',
+                    top: 'center',
+                    feature: {
+                        dataView: {readOnly: false},
+                        restore: {},
+                        saveAsImage: {}
+                    }
+                },
+                visualMap: {
+                    min: 800,
+                    max: 50000,
+                    text: ['High', 'Low'],
+                    realtime: false,
+                    calculable: true,
+                    inRange: {
+                        color: ['lightskyblue', 'yellow', 'orangered']
+                    }
+                },
+                series: [
+                    {
+                        name: '浙江省购买密度',
+                        type: 'map',
+                        mapType: 'HK', // 自定义扩展图表类型
+                        label: {
+                            show: true
+                        },
+                        data: [
+                            {name: '湖州市', value: 2008},
+                            {name: '嘉兴市', value: 11548},
+                            {name: '杭州市', value: 51688},
+                            {name: '绍兴市', value: 6992},
+                            {name: '舟山市', value: 27405},
+                            {name: '宁波市', value: 34069},
+                            {name: '衢州市', value: 3769},
+                            {name: '金华市', value: 518},
+                            {name: '台州市', value: 520},
+                            {name: '丽水市', value: 1190},
+                            {name: '温州市', value: 9918},
+
+                        ]
+                    }
+                ]
+            });
+        });
+
+    var myEChart = echarts.init(document.getElementById("main"));
+    var xAxisData = [];
+    var data1 = [];
+    var data2 = [];
+    for (var i = 15; i < 100; i++) {
+        xAxisData.push('商品' + i);
+        data1.push((Math.sin(i / 5) * (i / 5 - 10) + i / 6) * 5);
+        data2.push((Math.cos(i / 5) * (i / 5 - 10) + i / 6) * 5);
+    }
+
+    option1 = {
+        title: {
+            text: '商品分析'
+        },
+        legend: {
+            data: ['下单', '付款']
+        },
+        toolbox: {
+            // y: 'bottom',
+            feature: {
+                magicType: {
+                    type: ['stack', 'tiled']
+                },
+                dataView: {},
+                saveAsImage: {
+                    pixelRatio: 2
+                }
+            }
+        },
+        tooltip: {},
+        xAxis: {
+            data: xAxisData,
+            splitLine: {
+                show: false
+            }
+        },
+        yAxis: {},
+        series: [{
+            name: 'bar',
+            type: 'bar',
+            data: data1,
+            animationDelay: function (idx) {
+                return idx * 10;
+            }
+        }, {
+            name: 'bar2',
+            type: 'bar',
+            data: data2,
+            animationDelay: function (idx) {
+                return idx * 10 + 100;
+            }
+        }],
+        animationEasing: 'elasticOut',
+        animationDelayUpdate: function (idx) {
+            return idx * 5;
+        }
+    };
+
+    myEChart.setOption(option1);
+</script>
+
+</body>
+</html>
